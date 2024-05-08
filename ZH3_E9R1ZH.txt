@@ -1,0 +1,61 @@
+A MongoDB Atlas-ban (vagy a Compass-ban) navigáljon a sample_mflix adatbázishoz, és kérdezze le a movies gyűjteményt az alábbiak szerint:
+
+A nyelvek közül a legelső English legyen ÉS
+A film 2 alkalommal lett díjazva (awards.wins)
+Csak a filmek címe, írói, rendezői és az év mezők jelenjenek meg
+Rendezzük sorba a filmeket év szerint csökkenően
+
+{"languages.0": "English", "awards.wins": 2}
+{title: 1, writers: 1, directors: 1, released: 1, _id: 0}
+{year: -1}
+
+
+A MongoDB shell-ben csatlakozzon a sample_mflix adatbázishoz, és kérdezze le a users gyűjteményt az alábbiak szerint:
+
+Csak a felhasználók neve és email címe jelenjen meg
+Az email cím tartalmazza a .com karaktersorozatot.
+
+db.users.find({email: /.com/}, {name: 1, email: 1, _id: 0})
+
+
+A MongoDB shell-ben csatlakozzon a sample_mflix adatbázishoz, és kérdezze le a movies gyűjteményt az alábbiak szerint:
+
+A lekérdezés feleljen meg a következő SQL lekérdezésnek:
+
+SELECT rated, AVG(runtime)
+FROM movies
+WHERE year > 1950
+GROUP BY rated
+
+ db.movies.aggregate([ {$match: {year: {$gt: 1950}}}, {$group: {_id: "$rated", atlag: {$avg: "$runtime"}}}])
+
+Csatlakozzon a Movies adatbázishoz a Neo4J Sandbox-ban (vagy a Desktop-ban), és kérdezze le a következőket:
+
+Listázzuk a filmek címét és szereplőit
+Csak a szereplő neve és a film cím jelenjen meg
+Szűrjünk az 1970 utáni évekre VAGY azokra a filmekre, amelyek címében a "Love" szó szerepel
+Nevezzük el a megjelenített mezőket
+Rendezzük sorba az eredményt cím szerint csökkenően!
+
+MATCH (p:Person)-[:ACTED_IN]-(m:Movie)
+WHERE m.released > 1970 OR m.title CONTAINS "Love"
+RETURN m.title AS cim, p.name AS nev
+ORDER BY m.title DESC
+
+
+
+A neo4j Sandbox-ban (vagy a Desktop-ban) csatlakozzon a Movies adatbázishoz, és kérdezze le a következő SQL-lekérdezésnek megfelelő adatokat:
+
+SELECT TOP 5  p.name AS Director, COUNT(*) AS NumMoviesDirected
+
+FROM movies m JOIN person p ON m.directorId = p.personId
+
+GROUP BY p.name
+
+ORDER BY NumMoviesDirected DESC
+
+MATCH (p:Person)-[:DIRECTED]->(m:Movie)
+WITH p.name AS Director
+RETURN Director, COUNT(*) AS NumMoviesDirected
+ORDER BY NumMoviesDirected DESC
+LIMIT 5
